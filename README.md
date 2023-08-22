@@ -3,6 +3,9 @@
 Kruise Rollouts 是一个旁路组件集成，提供高级渐进式交付功能：
   1.Deployment、CloneSet、StatefulSet、Advanced StatefulSet的多批量更新策略。
   2.金丝雀更新部署策略。
+
+Pod TCP 监控功能呢：
+  1. 普罗米修斯 Pod TCP 监控图表展示
 ```
 ### 1.前端插件安装
 #### 插件拷贝至gin-vue-admin/web/src/plugin/ 目录，安装软件依赖
