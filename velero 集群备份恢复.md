@@ -24,12 +24,12 @@ services:
       driver: "json-file"
       options:
         max-size: "1m"
-```
-
+        
 #启动容器
 docker-compose up -d
 
 访问web界面创建一个桶： velerodata
+```
 
 
 #### 2.安装 velero
@@ -39,12 +39,15 @@ docker-compose up -d
  aws_access_key_id = admin
  aws_secret_access_key = YRC5k3EyDZvq
  EOF
+
+
+ 下载适合的客户端版本 https://github.com/vmware-tanzu/velero/releases/
+minio ip根据自己情况修改
 ```
 
-下载适合的客户端版本 https://github.com/vmware-tanzu/velero/releases/
-minio ip根据自己情况修改
 
 
+```
 velero install \
   --plugins velero/velero-plugin-for-aws\
   --provider aws \
@@ -56,10 +59,11 @@ velero install \
 查看容器状态：
 kubectl get pods -n velero
 
+```
 
 
 #### 3.velero常用操作
-
+```
 #不指定命名空间默认全部
 velero backup create backup1         
 
@@ -87,3 +91,4 @@ velero backup   get
 
 #恢复
 velero restore  create --from-backup data-backup  --wait  -n velero  
+```
