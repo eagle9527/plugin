@@ -1,14 +1,10 @@
-### 升级内容
-```
-   1. arthas应用诊断能力。
-   2. velero集群备份恢复能力。
-```
 ### 插件演示地址
 ```
-http://14.29.242.163:8081
+[http://14.29.242.163:8081](http://14.29.242.163:8081)
 测试账号 demo007
 密码 123456
 ```
+
 ### 容器管理插件能力
 ```
    1. K8S原生资源管理，多集群管理，提供表单资源管理，YAML方式管理，终端管理，终端审计等能力
@@ -19,13 +15,16 @@ http://14.29.242.163:8081
    6. 集成Kubevela应用管理能力
    7. arthas应用诊断能力。
    8. velero 集群备份恢复能力。
+   9. AI助手能力,自然语言自动解析为 K8s 操作。
 
 方便运维对Kubernetes集群资源的细粒度授权，方便开发管理Kubernetes内的应用对其进行故障排查，提供友好的操作页面降低使用复杂性。
 
 
 ```
-### 1.前端插件安装
-#### 插件拷贝至gin-vue-admin/web/src/plugin/ 目录，安装软件依赖
+### 请使用Gin-Vue-Admin 插件系统的，安装能力，安装此插件
+
+### 1.前端插件配置
+#### 安装依赖
 ```
     npm i monaco-editor-vue3@0.1.6 js-yaml@4.1.0  \
           vue-chartjs@4.1.1 \
@@ -87,31 +86,48 @@ app
 export default app
 
 ```
-### 2.后端插件安装
-#### 插件放入gin-vue-admin/server/plugin，后端插件引入
-gin-vue-admin/server/initialize/plugin.go 添加
-```
-import  "github.com/flipped-aurora/gin-vue-admin/server/plugin/kubernetes"
+### 2.后端插件配置
+#### 插件引入
 
-PluginInit(PrivateGroup, kubernetes.CreateKubernetesPlug()) // 
-kubernetes插件
+文件名: gin-vue-admin/server/initialize/plugin_biz_v2.go
+
 ```
+"github.com/flipped-aurora/gin-vue-admin/server/plugin/kubernetes" #引入kubernetes包
+
+
+
+func bizPluginV2(engine *gin.Engine) {
+	PluginInitV2(engine, announcement.Plugin)
+	PluginInitV2(engine, kubernetes.Plugin)     #kubernetes插件
+} 
+
+```
+
 ### 3.后端插件Websocket路由配置
-gin-vue-admin/server/initialize/router.go
+文件名: gin-vue-admin/server/initialize/router.go
 ```
 导入路由: 
+   
    kubernetes "github.com/flipped-aurora/gin-vue-admin/server/plugin/kubernetes/router"
-初始化路由里面加入插件配置(func Routers() *gin.Engine 初始化路由方法)
-kubernetesRouter := kubernetes.RouterGroupApp.WsApiRouter 
-{
-    systemRouter.InitBaseRouter(PublicGroup)   // 注册基础功能路由 不做鉴权
-    systemRouter.InitInitRouter(PublicGroup)   // 自动初始化相关
-    kubernetesRouter.InitWsRouter(PublicGroup) // WebSocket路由 （这个是新增的路由）
-  }
+
+
+
+    kubernetesRouter := kubernetes.RouterGroupApp.WsApiRouter 
+
+	{
+		systemRouter.InitBaseRouter(PublicGroup)   // 注册基础功能路由 不做鉴权
+		systemRouter.InitInitRouter(PublicGroup)   // 自动初始化相关
+		kubernetesRouter.InitWsRouter(PublicGroup) // WebSocket路由 （这个是新增的路由）
+	}
+
 ```
 ### 4.后端依赖安装
 ```
  gin-vue-admin 目录执行:    go mod tidy        #安装插件所需依赖
+
+
+ # 使用应用诊断采用到下面的 arthas 包，不使用可以不操作(可选)
+
  拷贝arthas 到静态资源里面
  cp  arthas-bin.tar resource/ 
 ```
@@ -152,78 +168,92 @@ Prometheus 数据查询过多，返回数据较大，导致Gin-Vue-Admin 操作�
 
 ### 9.功能展示
 
-### 功能 (arthas 应用诊断能力)
-![应用诊断](https://github.com/2696524545/plugin/blob/main/arthas.gif?raw=true)
-![arthas终端](https://github.com/2696524545/plugin/blob/main/arthas终端.png?raw=true)
-![jvm监控](https://github.com/2696524545/plugin/blob/main/jvm监控.png?raw=true)
+### AI助手
+[![AI助手](https://i.imgs.ovh/2025/09/19/7LujCp.png)](https://i.imgs.ovh/2025/09/19/7LujCp.png)
 
+### 功能 (arthas 应用诊断能力)
+[![arthas终端](https://i.imgs.ovh/2025/09/19/7Lu9eq.png)](https://i.imgs.ovh/2025/09/19/7Lu9eq.png)
+[![jvm监控](https://i.imgs.ovh/2025/09/19/7LuYuQ.png)](https://i.imgs.ovh/2025/09/19/7LuYuQ.png)
 
 ### 功能 (Kubevela 集群关联)
-![集群关联](https://github.com/2696524545/plugin/blob/main/集群关联1.png?raw=true)
-![集群关联列表](https://github.com/2696524545/plugin/blob/main/集群关联2.png?raw=true)
-![集群注册](https://github.com/2696524545/plugin/blob/main/集群关联3.png?raw=true)
+[![集群关联](https://i.imgs.ovh/2025/09/19/7LudK9.png)](https://i.imgs.ovh/2025/09/19/7LudK9.png)
+[![集群关联列表](https://i.imgs.ovh/2025/09/19/7Lupo6.png)](https://i.imgs.ovh/2025/09/19/7Lupo6.png)
+[![集群注册](https://i.imgs.ovh/2025/09/19/7LuINO.png)](https://i.imgs.ovh/2025/09/19/7LuINO.png)
+
 
 ### 功能 (Kubevela 应用管理)
-![应用管理](https://github.com/2696524545/plugin/blob/main/Kubevela应用管理.png?raw=true)
+[![应用管理](https://i.imgs.ovh/2025/09/19/7LuGUd.png)](https://i.imgs.ovh/2025/09/19/7LuGUd.png)
 
 ### 功能 (Kubevela 应用详情)
-![应用详情](https://github.com/2696524545/plugin/blob/main/应用详情.png?raw=true)
-![应用详情](https://github.com/2696524545/plugin/blob/main/应用详情2.png?raw=true)
-![应用详情](https://github.com/2696524545/plugin/blob/main/应用详情3.png?raw=true)
+[![应用详情](https://i.imgs.ovh/2025/09/19/7LuXsb.png)](https://i.imgs.ovh/2025/09/19/7LuXsb.png)
+[![应用详情](https://i.imgs.ovh/2025/09/19/7LuwK1.png)](https://i.imgs.ovh/2025/09/19/7LuwK1.png)
+[![应用详情](https://i.imgs.ovh/2025/09/19/7Lu3On.png)](https://i.imgs.ovh/2025/09/19/7Lu3On.png)
 
 
 ### (KubeBlocks 中间件列表)
-![容器文件管理](https://github.com/2696524545/plugin/blob/main/KubeBlockss-list.png?raw=true)
+[![中间件列表](https://i.imgs.ovh/2025/09/19/7Luiox.png)](https://i.imgs.ovh/2025/09/19/7Luiox.png)
 
 ###  (KubeBlocks 中间件创建)
-![容器文件管理](https://github.com/2696524545/plugin/blob/main/KubeBlocks-create.png?raw=true)
+[![中间件创建](https://i.imgs.ovh/2025/09/19/7LxCVr.png)](https://i.imgs.ovh/2025/09/19/7LxCVr.png)
 
 
 ### 容器文件管理
-![容器文件管理](https://github.com/2696524545/plugin/blob/main/容器文件管理.png?raw=true)
+[![容器文件管理](https://i.imgs.ovh/2025/09/19/7Lxjst.png)](https://i.imgs.ovh/2025/09/19/7Lxjst.png)
 
 ### 集群凭据管理
-![集群凭据](https://github.com/2696524545/plugin/blob/main/集群凭据.png?raw=true)
+[![集群凭据](https://i.imgs.ovh/2025/09/19/7LxrZC.png)](https://i.imgs.ovh/2025/09/19/7LxrZC.png)
 
 ### 集群用户管理
-![集群用户管理](https://github.com/2696524545/plugin/blob/main/集群用户.png?raw=true)
+[![集群用户管理](https://i.imgs.ovh/2025/09/19/7LxF4A.png)](https://i.imgs.ovh/2025/09/19/7LxF4A.png)
 
 ### 集群权限管理
-![集群权限](https://github.com/2696524545/plugin/blob/main/集群权限.png?raw=true)
+[![集群权限](https://i.imgs.ovh/2025/09/19/7LxUnU.png)](https://i.imgs.ovh/2025/09/19/7LxUnU.png)
 
 
 ### 终端审计管理
-![终端审计](https://github.com/2696524545/plugin/blob/main/终端审计.gif?raw=true)
+[![终端审计](https://i.imgs.ovh/2025/09/19/7LxVxX.png)](https://i.imgs.ovh/2025/09/19/7LxVxX.png)
 
 ### （Kruise Rollouts 多批次发布）
 
-![多批次发布](https://github.com/2696524545/plugin/blob/main/Kruise-Rollouts.gif?raw=true)
+[![多批次发布](https://i.imgs.ovh/2025/09/19/7LxMF0.png)](https://i.imgs.ovh/2025/09/19/7LxMF0.png)
 
 ### （Pod TCP 指标监控）
 
-![Pod TCP指标监控](https://github.com/2696524545/plugin/blob/main/podTcpMonitor.png?raw=true)
+[![Pod TCP指标监控](https://i.imgs.ovh/2025/09/19/7LxP9Y.png)](https://i.imgs.ovh/2025/09/19/7LxP9Y.png)
 
 ### （Pod 指标监控缩略图）
 
-![Pod TCP指标监控](https://github.com/2696524545/plugin/blob/main/PodMonitor.gif?raw=true)
+[![Pod TCP指标监控](https://i.imgs.ovh/2025/09/19/7Lxu0A.png)](https://i.imgs.ovh/2025/09/19/7Lxu0A.png)
 
-![集群管理](https://github.com/2696524545/plugin/blob/main/clusters.png?raw=true)
 #### 集群管理
-![集群管理](https://github.com/2696524545/plugin/blob/main/clusters.png?raw=true)
-![集群管理](https://github.com/2696524545/plugin/blob/main/clusters3.png?raw=true)
+[![集群管理](https://i.imgs.ovh/2025/09/19/7LBCdc.png)](https://i.imgs.ovh/2025/09/19/7LBCdc.png)
+[![集群管理](https://i.imgs.ovh/2025/09/19/7LBjXd.png)](https://i.imgs.ovh/2025/09/19/7LBjXd.png)
+
+
 #### 节点管理
-![节点管理](https://github.com/2696524545/plugin/blob/main/node.png?raw=true)
+[![节点管理](https://i.imgs.ovh/2025/09/19/7LBgSh.png)](https://i.imgs.ovh/2025/09/19/7LBgSh.png)
+
+
 #### 节点监控
-![节点监控](https://github.com/2696524545/plugin/blob/main/nodemonitor.png?raw=true)
+[![节点监控](https://i.imgs.ovh/2025/09/19/7LB86q.png)](https://i.imgs.ovh/2025/09/19/7LB86q.png)
+
+
 #### 工作负载
-![工作负载](https://github.com/2696524545/plugin/blob/main/workloads.png?raw=true)
-![工作负载](https://github.com/2696524545/plugin/blob/main/workload-form.png?raw=true)
+[![工作负载](https://i.imgs.ovh/2025/09/19/7LBnMX.png)](https://i.imgs.ovh/2025/09/19/7LBnMX.png)
+[![工作负载](https://i.imgs.ovh/2025/09/19/7LBlJ6.png)](https://i.imgs.ovh/2025/09/19/7LBlJ6.png)
+
+
 #### Deployment详情
-![Deployment详情](https://github.com/2696524545/plugin/blob/main/DeploymentDetail.png?raw=true)
+[![Deployment详情](https://i.imgs.ovh/2025/09/19/7L1bAc.png)](https://i.imgs.ovh/2025/09/19/7L1bAc.png)
+
+
 #### Deployment编辑
-![Deployment编辑](https://github.com/2696524545/plugin/blob/main/resourceEdit.png?raw=true)
+[![Deployment编辑](https://i.imgs.ovh/2025/09/19/7L16c0.png)](https://i.imgs.ovh/2025/09/19/7L16c0.png)
+
+
 #### Pod监控
-![Pod监控](https://github.com/2696524545/plugin/blob/main/podmonitor.png?raw=true)
+[![Pod监控](https://i.imgs.ovh/2025/09/19/7L1olt.png)](https://i.imgs.ovh/2025/09/19/7L1olt.png)
+
 #### Pod终端
 ![Pod终端](https://github.com/2696524545/plugin/blob/main/PodTerminal.png?raw=true)
 #### Pod终端日志
