@@ -1,13 +1,12 @@
-### 升级内容
+## Kubernetes容器管理插件
+
 ```
-   1. arthas应用诊断能力。
-   2. velero集群备份恢复能力。
-```
-### 插件演示地址
-```
-http://14.29.242.163:8081
-测试账号 demo007
-密码 123456
+
+[测试地址](http://180.76.237.85:8080)
+http://180.76.237.85:8080
+账号:   demo01
+密码:   demo01
+
 ```
 ### 容器管理插件能力
 ```
@@ -19,13 +18,17 @@ http://14.29.242.163:8081
    6. 集成Kubevela应用管理能力
    7. arthas应用诊断能力。
    8. velero 集群备份恢复能力。
+   9. AI助手能力,自然语言自动解析为 K8s 操作。
+  10. Gateway API管理能力
 
 方便运维对Kubernetes集群资源的细粒度授权，方便开发管理Kubernetes内的应用对其进行故障排查，提供友好的操作页面降低使用复杂性。
 
 
 ```
-### 1.前端插件安装
-#### 插件拷贝至gin-vue-admin/web/src/plugin/ 目录，安装软件依赖
+### 请使用Gin-Vue-Admin 插件系统的，安装能力，安装此插件
+
+### 1.前端插件配置
+#### 安装依赖
 ```
     npm i monaco-editor-vue3@0.1.6 js-yaml@4.1.0  \
           vue-chartjs@4.1.1 \
@@ -87,31 +90,48 @@ app
 export default app
 
 ```
-### 2.后端插件安装
-#### 插件放入gin-vue-admin/server/plugin，后端插件引入
-gin-vue-admin/server/initialize/plugin.go 添加
-```
-import  "github.com/flipped-aurora/gin-vue-admin/server/plugin/kubernetes"
+### 2.后端插件配置
+#### 插件引入
 
-PluginInit(PrivateGroup, kubernetes.CreateKubernetesPlug()) // 
-kubernetes插件
+文件名: gin-vue-admin/server/initialize/plugin_biz_v2.go
+
 ```
+"github.com/flipped-aurora/gin-vue-admin/server/plugin/kubernetes" #引入kubernetes包
+
+
+
+func bizPluginV2(engine *gin.Engine) {
+	PluginInitV2(engine, announcement.Plugin)
+	PluginInitV2(engine, kubernetes.Plugin)     #kubernetes插件
+} 
+
+```
+
 ### 3.后端插件Websocket路由配置
-gin-vue-admin/server/initialize/router.go
+文件名: gin-vue-admin/server/initialize/router.go
 ```
 导入路由: 
+   
    kubernetes "github.com/flipped-aurora/gin-vue-admin/server/plugin/kubernetes/router"
-初始化路由里面加入插件配置(func Routers() *gin.Engine 初始化路由方法)
-kubernetesRouter := kubernetes.RouterGroupApp.WsApiRouter 
-{
-    systemRouter.InitBaseRouter(PublicGroup)   // 注册基础功能路由 不做鉴权
-    systemRouter.InitInitRouter(PublicGroup)   // 自动初始化相关
-    kubernetesRouter.InitWsRouter(PublicGroup) // WebSocket路由 （这个是新增的路由）
-  }
+
+
+
+    kubernetesRouter := kubernetes.RouterGroupApp.WsApiRouter 
+
+	{
+		systemRouter.InitBaseRouter(PublicGroup)   // 注册基础功能路由 不做鉴权
+		systemRouter.InitInitRouter(PublicGroup)   // 自动初始化相关
+		kubernetesRouter.InitWsRouter(PublicGroup) // WebSocket路由 （这个是新增的路由）
+	}
+
 ```
 ### 4.后端依赖安装
 ```
  gin-vue-admin 目录执行:    go mod tidy        #安装插件所需依赖
+
+
+ # 使用应用诊断采用到下面的 arthas 包，不使用可以不操作(可选)
+
  拷贝arthas 到静态资源里面
  cp  arthas-bin.tar resource/ 
 ```
@@ -240,8 +260,3 @@ Prometheus 数据查询过多，返回数据较大，导致Gin-Vue-Admin 操作�
 ![存储管理](https://github.com/2696524545/plugin/blob/main/storages.png?raw=true)
 #### 访问控制
 ![访问控制](https://github.com/2696524545/plugin/blob/main/access.png?raw=true)
-
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=2696524545/plugin&type=Date)](https://star-history.com/#2696524545/plugin&Date)
